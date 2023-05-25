@@ -17,14 +17,13 @@ resource "aws_iam_role" "role" {
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 
   inline_policy {
-    name = "DynamoDB"
-    policy = data.aws_iam_policy_document.dynamodb.json
+    name   = "DynamoDB"
+    policy = module.table.rw_policy_document
   }
 }
 
 locals {
   function_name = "tf_api"
-  table_name    = "ApiTable"
 }
 
 # Lambda Source Code
@@ -82,24 +81,6 @@ data "aws_iam_policy_document" "lambda_logging" {
   }
 }
 
-data "aws_iam_policy_document" "dynamodb" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "dynamodb:BatchGet*",
-      "dynamodb:BatchWrite*",
-      "dynamodb:Delete*",
-      "dynamodb:DescribeTable",
-      "dynamodb:Get*",
-      "dynamodb:PutItem",
-      "dynamodb:Query",
-      "dynamodb:Scan",
-      "dynamodb:Update*",
-    ]
-    resources = ["arn:aws:dynamodb:*:*:table/${local.table_name}"]
-  }
-}
-
 resource "aws_iam_policy" "lambda_logging" {
   name        = "lambda_logging"
   path        = "/"
@@ -112,13 +93,7 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
   policy_arn = aws_iam_policy.lambda_logging.arn
 }
 
-resource "aws_dynamodb_table" "table" {
-  name           = "ApiTable"
-  hash_key       = "PK"
-  write_capacity = 1
-  read_capacity  = 1
-  attribute {
-    name = "PK"
-    type = "S"
-  }
+module "table" {
+  source     = "./modules/aws-dynamodb"
+  table_name = "ApiTable"
 }
