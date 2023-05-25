@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "aws" {
-  region = var.myregion
+  region = var.region
 }
 
 locals {
@@ -32,7 +32,7 @@ module "api" {
   source = "./modules/aws-apigw"
 
   name       = "tf_api"
-  region     = var.myregion
+  region     = var.region
   accountId  = var.accountId
   invoke_arn = module.lambda.invoke_arn
 }

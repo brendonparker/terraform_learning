@@ -14,6 +14,12 @@ This is a repo I'm using as a learning playground for terraform. I plan to start
 
 ## How to deploy
 
+### Initial one-time
+```
+terraform init
+```
+
+### For each deploy
 Build the application artifacts (requires [dotnet SDK](https://dotnet.microsoft.com/en-us/download))
 
 ```
