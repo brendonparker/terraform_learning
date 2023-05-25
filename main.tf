@@ -33,30 +33,14 @@ resource "aws_api_gateway_method" "method" {
   authorization = "NONE"
 }
 
-# resource "aws_api_gateway_method" "root_method" {
-#   rest_api_id   = aws_api_gateway_rest_api.api.id
-#   resource_id   = aws_api_gateway_rest_api.api.root_resource_id
-#   http_method   = "ANY"
-#   authorization = "NONE"
-# }
-
 resource "aws_api_gateway_integration" "integration" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.resource.id
   http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.tf_lambda.invoke_arn
+  uri                     = module.lambda.invoke_arn
 }
-
-# resource "aws_api_gateway_integration" "root_integration" {
-#   rest_api_id             = aws_api_gateway_rest_api.api.id
-#   resource_id             = aws_api_gateway_method.root_method.resource_id
-#   http_method             = aws_api_gateway_method.root_method.http_method
-#   integration_http_method = "POST"
-#   type                    = "AWS_PROXY"
-#   uri                     = aws_lambda_function.tf_lambda.invoke_arn
-# }
 
 resource "aws_api_gateway_deployment" "api" {
   rest_api_id = aws_api_gateway_rest_api.api.id
@@ -70,8 +54,7 @@ resource "aws_api_gateway_deployment" "api" {
   }
 
   depends_on = [
-    aws_api_gateway_integration.integration,
-    # aws_api_gateway_integration.root_integration
+    aws_api_gateway_integration.integration
   ]
 }
 
@@ -81,6 +64,36 @@ resource "aws_api_gateway_stage" "stage" {
   stage_name    = "prod"
 }
 
-output "api_url" {
-  value = aws_api_gateway_stage.stage.invoke_url
+resource "aws_lambda_permission" "apigw_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = local.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "arn:aws:execute-api:${var.myregion}:${var.accountId}:${aws_api_gateway_rest_api.api.id}/*/${aws_api_gateway_method.method.http_method}${aws_api_gateway_resource.resource.path}"
+}
+
+locals {
+  table_name    = "ApiTable"
+  function_name = "tf_api"
+}
+
+module "table" {
+  source = "./modules/aws-dynamodb"
+
+  table_name = local.table_name
+}
+
+module "lambda" {
+  source = "./modules/aws-lambda"
+
+  table_name    = local.table_name
+  function_name = local.function_name
+}
+
+# Originally I had everything in the root module
+# This is how to move things into the new module
+# without them being destroyed/recreated
+moved {
+  from = aws_dynamodb_table.table
+  to   = module.table.aws_dynamodb_table.table
 }

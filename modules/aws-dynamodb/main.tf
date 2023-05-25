@@ -8,21 +8,3 @@ resource "aws_dynamodb_table" "table" {
     type = "S"
   }
 }
-
-data "aws_iam_policy_document" "dynamodb" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "dynamodb:BatchGet*",
-      "dynamodb:BatchWrite*",
-      "dynamodb:Delete*",
-      "dynamodb:DescribeTable",
-      "dynamodb:Get*",
-      "dynamodb:PutItem",
-      "dynamodb:Query",
-      "dynamodb:Scan",
-      "dynamodb:Update*",
-    ]
-    resources = ["arn:aws:dynamodb:*:*:table/${var.table_name}"]
-  }
-}
