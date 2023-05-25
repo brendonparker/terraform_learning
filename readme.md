@@ -1,7 +1,7 @@
 ## Build Source for Lambda
 ```
-rm -rf dist
-dotnet publish ./app/MyApi -c Release -o dist
+rm -rf ./app/dist
+dotnet publish ./app/MyApi -c Release -o ./app/dist
 ```
 
 ## Deploy

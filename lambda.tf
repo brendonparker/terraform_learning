@@ -30,8 +30,8 @@ locals {
 # Lambda Source Code
 data "archive_file" "lambda" {
   type        = "zip"
-  source_dir  = "dist"
-  output_path = "api_source.zip"
+  source_dir  = "app/dist"
+  output_path = "app/lambda.zip"
 }
 
 # Lambda
