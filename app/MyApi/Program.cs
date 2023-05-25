@@ -19,7 +19,7 @@ app.UseHttpsRedirection();
 app.MapGet("/write", async ([FromServices] IDatabaseService db) =>
 {
     await db.WriteAsync();
-    return new { status = "Healthy!" };
+    return new { status = "Healthy!!" };
 });
 
 app.MapGet("/read", async ([FromServices] IDatabaseService db) =>
