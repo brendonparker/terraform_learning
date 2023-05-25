@@ -13,74 +13,40 @@ provider "aws" {
   region = var.myregion
 }
 
-resource "aws_api_gateway_rest_api" "api" {
-  name = "tf_api"
-  endpoint_configuration {
-    types = ["REGIONAL"]
-  }
+locals {
+  table_name    = "ApiTable"
+  function_name = "tf_api"
 }
 
-resource "aws_api_gateway_resource" "resource" {
-  path_part   = "{proxy+}"
-  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-  rest_api_id = aws_api_gateway_rest_api.api.id
+module "lambda" {
+  source = "./modules/aws-lambda"
+
+  table_name    = local.table_name
+  function_name = local.function_name
+  handler_name = "MyApi"
+  source_dir = "app/dist"
+  source_arn = module.api.source_arn
 }
 
-resource "aws_api_gateway_method" "method" {
-  rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.resource.id
-  http_method   = "ANY"
-  authorization = "NONE"
+module "api" {
+  source = "./modules/aws-apigw"
+
+  name       = "tf_api"
+  region     = var.myregion
+  accountId  = var.accountId
+  invoke_arn = module.lambda.invoke_arn
 }
 
-# resource "aws_api_gateway_method" "root_method" {
-#   rest_api_id   = aws_api_gateway_rest_api.api.id
-#   resource_id   = aws_api_gateway_rest_api.api.root_resource_id
-#   http_method   = "ANY"
-#   authorization = "NONE"
-# }
+module "table" {
+  source = "./modules/aws-dynamodb"
 
-resource "aws_api_gateway_integration" "integration" {
-  rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.resource.id
-  http_method             = aws_api_gateway_method.method.http_method
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.tf_lambda.invoke_arn
+  table_name = local.table_name
 }
 
-# resource "aws_api_gateway_integration" "root_integration" {
-#   rest_api_id             = aws_api_gateway_rest_api.api.id
-#   resource_id             = aws_api_gateway_method.root_method.resource_id
-#   http_method             = aws_api_gateway_method.root_method.http_method
-#   integration_http_method = "POST"
-#   type                    = "AWS_PROXY"
-#   uri                     = aws_lambda_function.tf_lambda.invoke_arn
-# }
-
-resource "aws_api_gateway_deployment" "api" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-
-  triggers = {
-    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.api.body))
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  depends_on = [
-    aws_api_gateway_integration.integration,
-    # aws_api_gateway_integration.root_integration
-  ]
-}
-
-resource "aws_api_gateway_stage" "stage" {
-  rest_api_id   = aws_api_gateway_rest_api.api.id
-  deployment_id = aws_api_gateway_deployment.api.id
-  stage_name    = "prod"
-}
-
-output "api_url" {
-  value = aws_api_gateway_stage.stage.invoke_url
+# Originally I had everything in the root module
+# This is how to move things into the new module
+# without them being destroyed/recreated
+moved {
+  from = aws_dynamodb_table.table
+  to   = module.table.aws_dynamodb_table.table
 }

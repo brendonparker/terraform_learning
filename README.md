@@ -7,7 +7,7 @@ This is a repo I'm using as a learning playground for terraform. I plan to start
 ### Objectives
 
 - [x] Deploy simple API Gateway with DynamoDB table
-- [ ] Explore refactor of terraform code to use modules and follow best practices for project setup
+- [x] Refactor use modules (lambda, apigateway, dynamodb)
 - [ ] Explore use of higher level components to reduce amount of terraform code
 - [ ] Develop comparable AWS CDK deployment as to compare terraform with AWS CDK
 - [ ] Investigate terraform CDK
