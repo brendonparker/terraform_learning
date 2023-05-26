@@ -1,16 +1,36 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as apigw from "aws-cdk-lib/aws-apigateway";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
 export class MainStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const api = new apigw.RestApi(this, "RestApi", {
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'AwsCdkQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const table = new dynamodb.Table(this, "Table", {
+      tableName: 'ApiTable',
+      partitionKey: {
+        name: 'PK',
+        type: dynamodb.AttributeType.STRING
+      },
+    });
+
+    const lambdaProxy = new lambda.Function(this, "Lambda", {
+      memorySize: 1536,
+      runtime: lambda.Runtime.DOTNET_6,
+      handler: "MyApi",
+      code: lambda.Code.fromAsset("../app/dist/"),
+    });
+
+    table.grantReadWriteData(lambdaProxy);
+
+    api.root.addProxy({
+      anyMethod: true,
+      defaultIntegration: new apigw.LambdaIntegration(lambdaProxy),
+    });
   }
 }
