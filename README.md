@@ -15,13 +15,13 @@ This is a repo I'm using as a learning playground for terraform. I plan to start
 
 ## How to deploy
 
-### Initial one-time
+### Initial/One-Time
 
 ```
 terraform init
 ```
 
-### For each deploy
+### For Each Deploy
 
 Build the application artifacts (requires [dotnet SDK](https://dotnet.microsoft.com/en-us/download))
 
@@ -35,6 +35,10 @@ then
 ```
 terraform apply -auto-approve
 ```
+
+## AWS CDK
+
+Part of this learning is to compare the terraform effort/experience to what I am already familiar with using the AWS CDK. To that end, I setup the same infrastructure as code using the AWS CDK [here](aws_cdk)
 
 ## Benchmarks
 
