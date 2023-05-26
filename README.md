@@ -40,16 +40,18 @@ terraform apply -auto-approve
 
 These are not scientific. I ran each test once. However, I think they show that terraform will deploy more quickly than CDK/CloudFormation.
 
-[ ] Benchmark remote backend for state
+- [ ] Benchmark remote backend for state
 
-| Action              | Environment | Backend | Duration (seconds) |
-| ------------------- | ----------- | ------- | -----------------: |
-| `terraform apply`   | New         | local   |                 40 |
-| `terraform apply`   | Existing    | local   |                 28 |
-| `terraform destroy` | Existing    | local   |                 27 |
-| `terraform apply`   | New         | remote  |                  ? |
-| `terraform apply`   | Existing    | remote  |                  ? |
-| `terraform destroy` | Existing    | remote  |                  ? |
-| `cdk deploy`        | New         | _N/A_   |                 90 |
-| `cdk deploy`        | Existing    | _N/A_   |                 46 |
-| `cdk destroy`       | Existing    | _N/A_   |                 54 |
+| Action              | Environment | Backend | Duration (seconds)                                  |
+| ------------------- | ----------- | ------- | --------------------------------------------------- |
+| `terraform apply`   | New         | local   | ![40](https://progress-bar.dev/40?suffix=&scale=90) |
+| `terraform apply`   | Existing    | local   | ![28](https://progress-bar.dev/28?suffix=&scale=90) |
+| `terraform destroy` | Existing    | local   | ![27](https://progress-bar.dev/27?suffix=&scale=90) |
+| `terraform apply`   | New         | remote  | ?                                                   |
+| `terraform apply`   | Existing    | remote  | ?                                                   |
+| `terraform destroy` | Existing    | remote  | ?                                                   |
+| `cdk deploy`        | New         | _N/A_   | ![90](https://progress-bar.dev/90?suffix=&scale=90) |
+| `cdk deploy`        | Existing    | _N/A_   | ![46](https://progress-bar.dev/46?suffix=&scale=90) |
+| `cdk destroy`       | Existing    | _N/A_   | ![54](https://progress-bar.dev/54?suffix=&scale=90) |
+
+_Note: Ideally the colors on the graphics above are inverted. from green -> red instead of red -> green_
