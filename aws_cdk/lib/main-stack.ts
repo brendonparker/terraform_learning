@@ -17,6 +17,7 @@ export class MainStack extends cdk.Stack {
         name: 'PK',
         type: dynamodb.AttributeType.STRING
       },
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
     const lambdaProxy = new lambda.Function(this, "Lambda", {

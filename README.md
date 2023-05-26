@@ -11,15 +11,18 @@ This is a repo I'm using as a learning playground for terraform. I plan to start
 - [ ] Explore use of higher level components to reduce amount of terraform code
 - [x] Develop comparable AWS CDK deployment as to compare terraform with AWS CDK
 - [ ] Investigate terraform CDK
+- [ ] Investigate remote backend for state
 
 ## How to deploy
 
 ### Initial one-time
+
 ```
 terraform init
 ```
 
 ### For each deploy
+
 Build the application artifacts (requires [dotnet SDK](https://dotnet.microsoft.com/en-us/download))
 
 ```
@@ -28,6 +31,25 @@ dotnet publish ./app/MyApi -c Release -o ./app/dist
 ```
 
 then
+
 ```
 terraform apply -auto-approve
 ```
+
+## Benchmarks
+
+These are not scientific. I ran each test once. However, I think they show that terraform will deploy more quickly than CDK/CloudFormation.
+
+[ ] Benchmark remote backend for state
+
+| Action              | Environment | Backend | Duration (seconds) |
+| ------------------- | ----------- | ------- | -----------------: |
+| `terraform apply`   | New         | local   |                 40 |
+| `terraform apply`   | Existing    | local   |                 28 |
+| `terraform destroy` | Existing    | local   |                 27 |
+| `terraform apply`   | New         | remote  |                  ? |
+| `terraform apply`   | Existing    | remote  |                  ? |
+| `terraform destroy` | Existing    | remote  |                  ? |
+| `cdk deploy`        | New         | _N/A_   |                 90 |
+| `cdk deploy`        | Existing    | _N/A_   |                 46 |
+| `cdk destroy`       | Existing    | _N/A_   |                 54 |
