@@ -11,7 +11,7 @@ This is a repo I'm using as a learning playground for terraform. I plan to start
 - [ ] Explore use of higher level components to reduce amount of terraform code
 - [x] Develop comparable AWS CDK deployment as to compare terraform with AWS CDK
 - [ ] Investigate terraform CDK
-- [ ] Investigate remote backend for state
+- [x] Investigate remote backend for state
 
 ## How to deploy
 
@@ -44,18 +44,15 @@ Part of this learning is to compare the terraform effort/experience to what I am
 
 These are not scientific. I ran each test once. However, I think they show that terraform will deploy more quickly than CDK/CloudFormation.
 
-- [ ] Benchmark remote backend for state
+Using a remote backend (s3) for the terraform state did not seem to have any noticable change to the deploy process.
 
-| Action              | Environment | Backend | Duration (seconds)                                  |
-| ------------------- | ----------- | ------- | --------------------------------------------------- |
-| `terraform apply`   | New         | local   | ![40](https://progress-bar.dev/40?suffix=&scale=90) |
-| `terraform apply`   | Existing    | local   | ![28](https://progress-bar.dev/28?suffix=&scale=90) |
-| `terraform destroy` | Existing    | local   | ![27](https://progress-bar.dev/27?suffix=&scale=90) |
-| `terraform apply`   | New         | remote  | ?                                                   |
-| `terraform apply`   | Existing    | remote  | ?                                                   |
-| `terraform destroy` | Existing    | remote  | ?                                                   |
-| `cdk deploy`        | New         | _N/A_   | ![90](https://progress-bar.dev/90?suffix=&scale=90) |
-| `cdk deploy`        | Existing    | _N/A_   | ![46](https://progress-bar.dev/46?suffix=&scale=90) |
-| `cdk destroy`       | Existing    | _N/A_   | ![54](https://progress-bar.dev/54?suffix=&scale=90) |
+| Action              | Environment | Duration (seconds)                                  |
+| ------------------- | ----------- | --------------------------------------------------- |
+| `terraform apply`   | New         | ![40](https://progress-bar.dev/40?suffix=&scale=90) |
+| `terraform apply`   | Existing    | ![28](https://progress-bar.dev/28?suffix=&scale=90) |
+| `terraform destroy` | Existing    | ![27](https://progress-bar.dev/27?suffix=&scale=90) |
+| `cdk deploy`        | New         | ![90](https://progress-bar.dev/90?suffix=&scale=90) |
+| `cdk deploy`        | Existing    | ![46](https://progress-bar.dev/46?suffix=&scale=90) |
+| `cdk destroy`       | Existing    | ![54](https://progress-bar.dev/54?suffix=&scale=90) |
 
 _Note: Ideally the colors on the graphics above are inverted. from green -> red instead of red -> green_
